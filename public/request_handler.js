@@ -40,6 +40,9 @@ export function RequestHandlerProvider (Private, es) {
     const bindme = {};
     bindme.context = context;
     bindme.vis = this.vis;
+    bindme.timefilter = vis.API.timeFilter;
+    bindme.timeRange = vis.API.timeFilter.getTime();
+    bindme.visTitle = vis.title;
     bindme.buildEsQuery = buildEsQuery;
     bindme.es = es;
     bindme.response = {};
@@ -85,6 +88,8 @@ export function RequestHandlerProvider (Private, es) {
       if (options.allow_unsafe) {
         try {
           const response = bindme.response;
+          if (visParams.meta.includes('.vis.API') || visParams.meta.includes('.vis.title'))
+            console.warn(`[DEPRECATION] Visualisation '${this.vis.title}' uses deprecated api`)
           bindme.meta = eval(babelTransform(visParams.meta));
         } catch (jserr) {
           bindme.jserr = jserr;
