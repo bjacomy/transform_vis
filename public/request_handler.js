@@ -8,6 +8,32 @@ const babelTransform = (code) => transform(code, { presets: ['es2015'], plugins:
 
 export function RequestHandlerProvider (Private, es) {
 
+  const deprecationsMonitoringEnabled = () => chrome.getUiSettingsClient().get('transform_vis:deprecations')
+
+  const findAggregationResults = (path, aggregations) => {
+    return [...(aggregations.buckets ? [{ path, bucketsSize: aggregations.buckets.length}] : []), ...Object.keys(aggregations).filter(key => Object.prototype.toString.call(aggregations[key]) === '[object Object]').reduce((acc, key) => [...acc, ...findAggregationResults([...path, key], aggregations[key])], [])]
+  }
+
+  const es_search = es.search;
+  es.search = function (...args) {
+    const req = args[0]
+    return es_search.apply(es, args).then(function (response) {
+      if (deprecationsMonitoringEnabled() && response.aggregations) {
+        const aggs = findAggregationResults([], response.aggregations)
+        const totalBucketsSize = aggs.reduce((acc, next) => acc + next.bucketsSize, 0)
+        const maxBucketsSize = Math.max(...aggs.map(({ bucketsSize }) => bucketsSize))
+        if (totalBucketsSize >= 0) {
+          console.groupCollapsed(`[TMT] While requesting '${req.index}' index, returned total ${totalBucketsSize} buckets (maximum ${maxBucketsSize}) in aggregations`)
+          console.log('[TMT] request', req)
+          console.log('[TMT] response', response)
+          console.table(aggs.map(({ path, bucketsSize }) => ({ '[TMT] key': path.join('.'), bucketsSize })), [])
+          console.groupEnd()
+        }
+      }
+      return response
+    })
+  }
+
   const myRequestHandler = function ({ timeRange, filters, query, queryFilter, searchSource, visParams }) {
 
     const buildEsQuery = Private(BuildESQueryProvider);
@@ -40,9 +66,9 @@ export function RequestHandlerProvider (Private, es) {
     const bindme = {};
     bindme.context = context;
     bindme.vis = this.vis;
-    bindme.timefilter = vis.API.timeFilter;
-    bindme.timeRange = vis.API.timeFilter.getTime();
-    bindme.visTitle = vis.title;
+    bindme.timefilter = this.vis.API.timeFilter;
+    bindme.timeRange = this.vis.API.timeFilter.getTime();
+    bindme.visTitle = this.vis.title;
     bindme.buildEsQuery = buildEsQuery;
     bindme.es = es;
     bindme.response = {};
@@ -88,8 +114,8 @@ export function RequestHandlerProvider (Private, es) {
       if (options.allow_unsafe) {
         try {
           const response = bindme.response;
-          if (visParams.meta.includes('.vis.API') || visParams.meta.includes('.vis.title'))
-            console.warn(`[DEPRECATION] Visualisation '${this.vis.title}' uses deprecated api`)
+          if (deprecationsMonitoringEnabled() && (visParams.meta.includes('.vis.API') || visParams.meta.includes('.vis.title')))
+            console.warn(`[TMT] [DEPRECATION] Visualisation '${this.vis.title}' uses deprecated api`)
           bindme.meta = eval(babelTransform(visParams.meta));
         } catch (jserr) {
           bindme.jserr = jserr;
