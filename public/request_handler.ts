@@ -95,12 +95,10 @@ export function getTransformRequestHandler({
       if (body.previousContextSource !== undefined) {
         const previousContextSource = body.previousContextSource;
         try {
-          // @ts-ignore
-          // noinspection ES6ConvertVarToLetConst используется var, чтобы не переименовывался при оптимизиции кода
-          var response = bindme.response;
-          // @ts-ignore
-          // noinspection ES6ConvertVarToLetConst используется var, чтобы не переименовывался при оптимизиции кода
-          var meta = bindme.meta;
+          // @ts-ignore используется без var/let/const, чтобы не переименовывался при оптимизиции кода
+          response = bindme.response;
+          // @ts-ignore используется без var/let/const, чтобы не переименовывался при оптимизиции кода
+          meta = bindme.meta;
           // eslint-disable-next-line no-eval
           const previousContextValue = eval(babelTransform(previousContextSource) || '');
           fillPrevioudContext(
@@ -131,9 +129,8 @@ export function getTransformRequestHandler({
     const evalMeta = () => {
       if (options.allow_unsafe) {
         try {
-          // @ts-ignore
-          // noinspection ES6ConvertVarToLetConst используется var, чтобы не переименовывался при оптимизиции кода
-          var response = bindme.response;
+          // @ts-ignore используется без var/let/const, чтобы не переименовывался при оптимизиции кода
+          response = bindme.response;
           // eslint-disable-next-line no-eval
           bindme.meta = eval(babelTransform(visParams.meta) || '');
         } catch (jserr) {
