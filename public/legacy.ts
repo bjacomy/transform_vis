@@ -8,6 +8,7 @@ import { plugin } from '.';
 const plugins: Readonly<TransformPluginSetupDependencies> = {
   expressions: npSetup.plugins.expressions,
   visualizations: visualizationsSetup,
+  data: npSetup.plugins.data,
 };
 
 const pluginInstance = plugin({} as PluginInitializerContext);

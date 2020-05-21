@@ -5,11 +5,13 @@ import { VisualizationsSetup } from '../../../src/legacy/core_plugins/visualizat
 
 import { createTransformVisDefinition } from './transform_vis';
 import { createTransformVisFn } from './transform_fn';
+import { DataPublicPluginSetup } from '../../../src/plugins/data/public';
 
 /** @internal */
 export interface TransformPluginSetupDependencies {
   expressions: ReturnType<ExpressionsPublicPlugin['setup']>;
   visualizations: VisualizationsSetup;
+  data: DataPublicPluginSetup;
 }
 
 /** @internal */
@@ -22,11 +24,11 @@ export class TransformPlugin implements Plugin<void, void> {
 
   public async setup(
     core: CoreSetup,
-    { expressions, visualizations }: TransformPluginSetupDependencies
+    { expressions, visualizations, data }: TransformPluginSetupDependencies
   ) {
     const $injector = await chrome.dangerouslyGetActiveInjector();
     visualizations.types.createReactVisualization(
-      createTransformVisDefinition({ uiSettings: core.uiSettings, es: $injector.get('es') })
+      createTransformVisDefinition({ uiSettings: core.uiSettings, es: $injector.get('es'), data })
     );
     expressions.registerFunction(() =>
       createTransformVisFn({ uiSettings: core.uiSettings, es: $injector.get('es') })

@@ -4,18 +4,22 @@ import { IUiSettingsClient } from 'kibana/public';
 import { Client as EsApiClient } from 'elasticsearch';
 import { DefaultEditorSize, Status } from '../../../src/legacy/core_plugins/visualizations/public';
 
-import { TransformVisWrapper } from './transform_vis_controller';
+import { getTransformVisWrapper } from './transform_vis_controller';
 import { getTransformOptions } from './transform_options';
 import { getTransformRequestHandler } from './request_handler';
+import { DataPublicPluginSetup } from '../../../src/plugins/data/public';
 
 export const createTransformVisDefinition = ({
   uiSettings,
   es,
+  data,
 }: {
   uiSettings: IUiSettingsClient;
   es: EsApiClient;
+  data: DataPublicPluginSetup;
 }) => {
   const transformRequestHandler = getTransformRequestHandler({ uiSettings, es });
+  const transformVisWrapper = getTransformVisWrapper(data);
 
   return {
     name: 'transform',
@@ -25,7 +29,7 @@ export const createTransformVisDefinition = ({
       defaultMessage: 'Transfom query results to custom HTML using template language',
     }),
     visConfig: {
-      component: TransformVisWrapper,
+      component: transformVisWrapper,
       defaults: {
         meta: `({
   count_hits: function() {
