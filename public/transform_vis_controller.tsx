@@ -49,7 +49,7 @@ class TransformVisComponent extends React.Component<TransformVisComponentProps> 
           vis: {
             ...this.props.vis,
             API: {
-              ...this.props.vis,
+              ...this.props.vis.API,
               timeFilter: {
                 getBounds: this.props.timefilter.getBounds.bind(this.props.timefilter),
                 getActiveBounds: this.props.timefilter.getBounds.bind(this.props.timefilter),
