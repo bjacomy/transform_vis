@@ -1,10 +1,5 @@
 .visEditor--transform {
-  vis-editor-vis-options, vis-options-react-wrapper {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-  }
-
+  .visEditorSidebar__config > *,
   .visEditor--transform__textarea {
     flex-grow: 1;
   }

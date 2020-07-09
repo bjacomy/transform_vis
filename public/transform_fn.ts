@@ -20,13 +20,10 @@
 import { get } from 'lodash';
 import { i18n } from '@kbn/i18n';
 import { IUiSettingsClient } from 'kibana/public';
-import { Client as EsApiClient } from 'elasticsearch';
-import { ExpressionFunction, Render, KibanaContext } from '../../../src/plugins/expressions/public';
+import { ExpressionFunctionDefinition, Render, KibanaContext } from '../../../src/plugins/expressions/public';
 import { Arguments, TransformVisParams } from './types';
 import { getTransformRequestHandler } from './request_handler';
-
-const name = 'transform_vis';
-type Context = KibanaContext | null;
+import { LegacyApiCaller } from '../../../src/plugins/data/public/search/es_client';
 
 interface RenderValue {
   visType: 'transform';
@@ -34,20 +31,16 @@ interface RenderValue {
   visConfig: TransformVisParams;
 }
 
-type Return = Promise<Render<RenderValue>>;
-
 export const createTransformVisFn = ({
   uiSettings,
   es,
 }: {
   uiSettings: IUiSettingsClient;
-  es: EsApiClient;
-}): ExpressionFunction<typeof name, Context, Arguments, Return> => ({
-  name,
+  es: LegacyApiCaller;
+}): ExpressionFunctionDefinition<'transform_vis', KibanaContext | null, Arguments, Promise<Render<RenderValue>>> => ({
+  name: 'transform_vis',
   type: 'render',
-  context: {
-    types: ['kibana_context', 'null'],
-  },
+  inputTypes: ['kibana_context', 'null'],
   help: i18n.translate('visTypeTransform.function.help', {
     defaultMessage: 'Transform visualization',
   }),
@@ -74,12 +67,12 @@ export const createTransformVisFn = ({
       }),
     },
   },
-  async fn(context, args) {
+  async fn(input, args) {
     const transformRequestHandler = getTransformRequestHandler({ uiSettings, es });
     const response = await transformRequestHandler({
-      timeRange: get(context, 'timeRange', null),
-      query: get(context, 'query', null),
-      filters: get(context, 'filters', null),
+      timeRange: get(input, 'timeRange', null),
+      query: get(input, 'query', null),
+      filters: get(input, 'filters', null),
       visParams: args,
     });
 

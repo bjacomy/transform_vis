@@ -1,12 +1,12 @@
 import { transform } from '@babel/standalone';
 import { IUiSettingsClient } from 'kibana/public';
 import Mustache from 'mustache';
-import { Client as EsApiClient } from 'elasticsearch';
 import { timefilter } from 'ui/timefilter';
 import chrome from 'ui/chrome';
-import { esQuery, TimeRange, esFilters, Query } from '../../../src/plugins/data/public';
+import { esQuery, TimeRange, Query, Filter } from '../../../src/plugins/data/public';
 import { VisParams } from '../../../src/legacy/core_plugins/visualizations/public/np_ready/public';
 import { TransformVisData } from './types';
+import { LegacyApiCaller } from '../../../src/plugins/data/public/search/es_client';
 
 const babelTransform = (code: string) => {
   return transform(code, {
@@ -20,7 +20,7 @@ export function getTransformRequestHandler({
                                              es,
                                            }: {
   uiSettings: IUiSettingsClient;
-  es: EsApiClient;
+  es: LegacyApiCaller;
 }) {
   return async ({
                   timeRange,
@@ -29,7 +29,7 @@ export function getTransformRequestHandler({
                   visParams,
                 }: {
     timeRange: TimeRange | null;
-    filters: esFilters.Filter[] | null;
+    filters: Filter[] | null;
     query: Query | null;
     visParams: VisParams;
   }): Promise<TransformVisData> => {

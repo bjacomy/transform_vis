@@ -1,13 +1,13 @@
 import { i18n } from '@kbn/i18n';
 
 import { IUiSettingsClient } from 'kibana/public';
-import { Client as EsApiClient } from 'elasticsearch';
-import { DefaultEditorSize, Status } from '../../../src/legacy/core_plugins/visualizations/public';
+import { DefaultEditorSize } from '../../../src/legacy/core_plugins/vis_default_editor/public';
 
 import { getTransformVisWrapper } from './transform_vis_controller';
 import { getTransformOptions } from './transform_options';
 import { getTransformRequestHandler } from './request_handler';
 import { DataPublicPluginSetup } from '../../../src/plugins/data/public';
+import { LegacyApiCaller } from '../../../src/plugins/data/public/search/es_client';
 
 export const createTransformVisDefinition = ({
   uiSettings,
@@ -15,7 +15,7 @@ export const createTransformVisDefinition = ({
   data,
 }: {
   uiSettings: IUiSettingsClient;
-  es: EsApiClient;
+  es: LegacyApiCaller;
   data: DataPublicPluginSetup;
 }) => {
   const transformRequestHandler = getTransformRequestHandler({ uiSettings, es });
@@ -73,7 +73,6 @@ export const createTransformVisDefinition = ({
       enableAutoApply: false,
       defaultSize: DefaultEditorSize.LARGE,
     },
-    requiresUpdateStatus: [Status.DATA, Status.RESIZE],
     requestHandler: transformRequestHandler,
     responseHandler: 'none',
     options: {

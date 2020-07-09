@@ -1,17 +1,17 @@
 import { PluginInitializerContext, CoreSetup, CoreStart, Plugin } from 'kibana/public';
-import chrome from 'ui/chrome';
 import { Plugin as ExpressionsPublicPlugin } from '../../../src/plugins/expressions/public';
 import { VisualizationsSetup } from '../../../src/legacy/core_plugins/visualizations/public';
 
 import { createTransformVisDefinition } from './transform_vis';
 import { createTransformVisFn } from './transform_fn';
-import { DataPublicPluginSetup } from '../../../src/plugins/data/public';
+import { DataPublicPluginSetup, DataPublicPluginStart } from '../../../src/plugins/data/public';
 
 /** @internal */
 export interface TransformPluginSetupDependencies {
   expressions: ReturnType<ExpressionsPublicPlugin['setup']>;
   visualizations: VisualizationsSetup;
   data: DataPublicPluginSetup;
+  dataStart: DataPublicPluginStart;
 }
 
 /** @internal */
@@ -24,14 +24,13 @@ export class TransformPlugin implements Plugin<void, void> {
 
   public async setup(
     core: CoreSetup,
-    { expressions, visualizations, data }: TransformPluginSetupDependencies
+    { expressions, visualizations, data, dataStart }: TransformPluginSetupDependencies
   ) {
-    const $injector = await chrome.dangerouslyGetActiveInjector();
-    visualizations.types.createReactVisualization(
-      createTransformVisDefinition({ uiSettings: core.uiSettings, es: $injector.get('es'), data })
+    visualizations.createReactVisualization(
+      createTransformVisDefinition({ uiSettings: core.uiSettings, es: dataStart.search.__LEGACY.esClient, data })
     );
     expressions.registerFunction(() =>
-      createTransformVisFn({ uiSettings: core.uiSettings, es: $injector.get('es') })
+      createTransformVisFn({ uiSettings: core.uiSettings, es: dataStart.search.__LEGACY.esClient })
     );
   }
 

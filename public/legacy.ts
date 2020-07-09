@@ -9,6 +9,7 @@ const plugins: Readonly<TransformPluginSetupDependencies> = {
   expressions: npSetup.plugins.expressions,
   visualizations: visualizationsSetup,
   data: npSetup.plugins.data,
+  dataStart: npStart.plugins.data,
 };
 
 const pluginInstance = plugin({} as PluginInitializerContext);

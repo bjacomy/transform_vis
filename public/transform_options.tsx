@@ -12,7 +12,7 @@ import 'brace/ext/language_tools';
 import 'brace/ext/searchbox';
 
 import ReactResizeDetector from 'react-resize-detector';
-import { VisOptionsProps } from 'ui/vis/editors/default';
+import { VisOptionsProps } from 'src/legacy/core_plugins/vis_default_editor/public';
 import { TransformVisParams, TransformVisParamsNames } from './types';
 
 const mode: Record<string, string> = {
@@ -28,7 +28,7 @@ function getTransformOptions(param: TransformVisParamsNames) {
     const codeEditor = useRef<EuiCodeEditor>(null);
     const onResize = useCallback(() => {
       const current = codeEditor.current;
-      if (current !== null) {
+      if (current !== null && current.aceEditor !== null) {
         current.aceEditor.editor.resize();
       }
     }, [codeEditor]);
@@ -37,14 +37,12 @@ function getTransformOptions(param: TransformVisParamsNames) {
       <EuiPanel paddingSize="s">
         <EuiCodeEditor
           ref={codeEditor}
-          id="transformVisInput"
           key={param}
           mode={mode[param]}
           theme="textmate"
           className="visEditor--transform__textarea"
           value={stateParams[param]}
           onChange={onChange}
-          fullWidth={true}
           data-test-subj="transformCodeeditor"
           width="100%"
           height="100%"
