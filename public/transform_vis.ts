@@ -1,13 +1,13 @@
 import { i18n } from '@kbn/i18n';
 
 import { IUiSettingsClient } from 'kibana/public';
-import { DefaultEditorSize } from '../../../src/legacy/core_plugins/vis_default_editor/public';
+import { DefaultEditorSize } from '../../../src/plugins/vis_default_editor/public';
 
 import { getTransformVisWrapper } from './transform_vis_controller';
 import { getTransformOptions } from './transform_options';
 import { getTransformRequestHandler } from './request_handler';
 import { DataPublicPluginSetup } from '../../../src/plugins/data/public';
-import { LegacyApiCaller } from '../../../src/plugins/data/public/search/es_client';
+import { LegacyApiCaller } from '../../../src/plugins/data/public/search/legacy/es_client';
 
 export const createTransformVisDefinition = ({
   uiSettings,
