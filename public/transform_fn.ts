@@ -23,7 +23,7 @@ import { IUiSettingsClient } from 'kibana/public';
 import { ExpressionFunctionDefinition, Render, KibanaContext } from '../../../src/plugins/expressions/public';
 import { Arguments, TransformVisParams } from './types';
 import { getTransformRequestHandler } from './request_handler';
-import { LegacyApiCaller } from '../../../src/plugins/data/public/search/es_client';
+import { LegacyApiCaller } from '../../../src/plugins/data/public/search/legacy/es_client';
 
 interface RenderValue {
   visType: 'transform';
@@ -68,7 +68,7 @@ export const createTransformVisFn = ({
     },
   },
   async fn(input, args) {
-    const transformRequestHandler = getTransformRequestHandler({ uiSettings, es });
+    const transformRequestHandler = getTransformRequestHandler({ uiSettings, es , timeFilter});
     const response = await transformRequestHandler({
       timeRange: get(input, 'timeRange', null),
       query: get(input, 'query', null),

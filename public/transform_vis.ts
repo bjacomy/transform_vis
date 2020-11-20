@@ -8,17 +8,19 @@ import { getTransformOptions } from './transform_options';
 import { getTransformRequestHandler } from './request_handler';
 import { DataPublicPluginSetup } from '../../../src/plugins/data/public';
 import { LegacyApiCaller } from '../../../src/plugins/data/public/search/legacy/es_client';
+import { Timefilter } from '../../../src/plugins/data/public/query/timefilter';
 
 export const createTransformVisDefinition = ({
   uiSettings,
   es,
   data,
-}: {
+  timefilter}: {
   uiSettings: IUiSettingsClient;
   es: LegacyApiCaller;
   data: DataPublicPluginSetup;
+  timefilter:Timefilter
 }) => {
-  const transformRequestHandler = getTransformRequestHandler({ uiSettings, es });
+  const transformRequestHandler = getTransformRequestHandler({ uiSettings: uiSettings, es : es, timeFilter :timefilter });
   const transformVisWrapper = getTransformVisWrapper(data);
 
   return {

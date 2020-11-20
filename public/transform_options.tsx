@@ -12,7 +12,7 @@ import 'brace/ext/language_tools';
 import 'brace/ext/searchbox';
 
 import ReactResizeDetector from 'react-resize-detector';
-import { VisOptionsProps } from 'src/legacy/core_plugins/vis_default_editor/public';
+import { VisOptionsProps } from 'src/plugins/vis_default_editor/public';
 import { TransformVisParams, TransformVisParamsNames } from './types';
 
 const mode: Record<string, string> = {

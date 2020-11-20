@@ -5,18 +5,18 @@ import ShadowDOM from 'react-shadow';
 // @ts-ignore
 import { saveAs } from '@elastic/filesaver';
 import OnMount from './on_mount';
-import { Vis } from '../../../src/legacy/core_plugins/visualizations/public/np_ready/public';
+import { ExprVis } from '../../../src/plugins/visualizations/public/expressions/vis';
 import { TransformVisData } from './types';
 import { DataPublicPluginSetup } from '../../../src/plugins/data/public';
 
 interface TransformVisComponentProps extends TransformVisData {
   renderComplete: () => {};
-  vis: Vis;
+  vis: ExprVis ;
   data: DataPublicPluginSetup;
 }
 
 interface TransformVisWrapperProps {
-  vis: Vis;
+  vis: ExprVis;
   visData: TransformVisData;
   renderComplete: () => {};
 }

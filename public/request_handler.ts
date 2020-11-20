@@ -1,12 +1,18 @@
 import { transform } from '@babel/standalone';
 import { IUiSettingsClient } from 'kibana/public';
 import Mustache from 'mustache';
-import { timefilter } from 'ui/timefilter';
-import chrome from 'ui/chrome';
+import { Timefilter } from '../../../src/plugins/data/public/query/timefilter';
+//import chrome from 'ui/chrome';
+//import { } from '../../../src/core/public/ui_settings/types'
+import {InjectedMetadataSetup} from '../../../src/core/public/injected_metadata'
 import { esQuery, TimeRange, Query, Filter } from '../../../src/plugins/data/public';
-import { VisParams } from '../../../src/legacy/core_plugins/visualizations/public/np_ready/public';
+import { VisParams } from '../../../src/plugins/visualizations/public';
 import { TransformVisData } from './types';
-import { LegacyApiCaller } from '../../../src/plugins/data/public/search/es_client';
+import { LegacyApiCaller } from '../../../src/plugins/data/public/search/legacy/es_client';
+import { ElasticsearchServiceStart, InternalElasticsearchServiceSetup } from '../../../src/core/server/elasticsearch';
+
+
+
 
 const babelTransform = (code: string) => {
   return transform(code, {
@@ -18,9 +24,11 @@ const babelTransform = (code: string) => {
 export function getTransformRequestHandler({
                                              uiSettings,
                                              es,
+                                             timeFilter
                                            }: {
   uiSettings: IUiSettingsClient;
   es: LegacyApiCaller;
+  timeFilter:Timefilter
 }) {
   return async ({
                   timeRange,
@@ -33,9 +41,10 @@ export function getTransformRequestHandler({
     query: Query | null;
     visParams: VisParams;
   }): Promise<TransformVisData> => {
-    const settings = chrome.getUiSettingsClient();
-    const options = chrome.getInjected('transformVisOptions');
-
+    const settings = uiSettings;
+    //const options = chrome.getInjected('transformVisOptions');
+    //const test = {name: 'string', defaultValue: undefined};
+    const options : InjectedMetadataSetup["getInjectedVar"]= (name= 'transformVisOptions', defaultValue= 'un')=> {};
     const _timeRange: TimeRange = timeRange || settings.get('timepicker:timeDefaults');
     const _filters = filters || [];
     const _query = query || { language: 'kquery', query: '' };
@@ -53,7 +62,7 @@ export function getTransformRequestHandler({
 
     const bindme: Record<string, any> = {};
     bindme.context = context;
-    bindme.timefilter = timefilter;
+    bindme.timefilter = timeFilter;
     bindme.timeRange = _timeRange;
     bindme.buildEsQuery = esQuery.buildEsQuery;
     bindme.es = es;
@@ -113,7 +122,7 @@ export function getTransformRequestHandler({
           index,
           body,
         })
-        .then(function (response) {
+        .then(function (response: { error: any; }) {
           // @ts-ignore
           if (response.error) throw response.error;
           if (queryName === '_single_') {
@@ -122,10 +131,10 @@ export function getTransformRequestHandler({
             bindme.response = Object.assign(bindme.response, { [queryName]: response });
           }
         })
-        .catch(error => logError('Elasticsearch Query Error', [ `"${queryName}" query:\nGET ${index}/_search\n${JSON.stringify(body, null, 2)}`, error ]));
+        .catch((error: any) => logError('Elasticsearch Query Error', [ `"${queryName}" query:\nGET ${index}/_search\n${JSON.stringify(body, null, 2)}`, error ]));
     };
 
-    const evalMeta = (response?: any) => {
+    const evalMeta = (_response?: any) => {
       if (options.allow_unsafe) {
         try {
           // @ts-ignore используется без var/let/const, а как необязатеьный параметр, чтобы не переименовывался при оптимизиции кода
@@ -158,7 +167,7 @@ export function getTransformRequestHandler({
           meta: bindme.meta,
           es,
           context,
-          timefilter,
+          timeFilter,
           timeRange,
           buildEsQuery: esQuery.buildEsQuery,
         };
