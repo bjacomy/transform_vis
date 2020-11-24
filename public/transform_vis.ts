@@ -9,6 +9,7 @@ import { getTransformRequestHandler } from './request_handler';
 import { DataPublicPluginSetup } from '../../../src/plugins/data/public';
 import { LegacyApiCaller } from '../../../src/plugins/data/public/search/legacy/es_client';
 import { Timefilter } from '../../../src/plugins/data/public/query/timefilter';
+import { SearchAPI } from './data_model/search_api'
 
 export const createTransformVisDefinition = ({
   uiSettings,
@@ -16,11 +17,11 @@ export const createTransformVisDefinition = ({
   data,
   timefilter}: {
   uiSettings: IUiSettingsClient;
-  es: LegacyApiCaller;
+  es: SearchAPI;
   data: DataPublicPluginSetup;
   timefilter:Timefilter
 }) => {
-  const transformRequestHandler = getTransformRequestHandler({ uiSettings: uiSettings, es : es, timeFilter :timefilter });
+  const transformRequestHandler = getTransformRequestHandler({ uiSettings: uiSettings,es : es, timeFilter :timefilter });
   const transformVisWrapper = getTransformVisWrapper(data);
 
   return {

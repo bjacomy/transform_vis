@@ -9,8 +9,10 @@ import { esQuery, TimeRange, Query, Filter } from '../../../src/plugins/data/pub
 import { VisParams } from '../../../src/plugins/visualizations/public';
 import { TransformVisData } from './types';
 import { LegacyApiCaller } from '../../../src/plugins/data/public/search/legacy/es_client';
+import { SearchAPI } from './data_model/search_api'
 import { ElasticsearchServiceStart, InternalElasticsearchServiceSetup } from '../../../src/core/server/elasticsearch';
-
+import { getData, getInjectedMetadata } from './services';
+import { DataPublicPluginSetup, DataPublicPluginStart } from '../../../src/plugins/data/public';
 
 
 
@@ -24,12 +26,14 @@ const babelTransform = (code: string) => {
 export function getTransformRequestHandler({
                                              uiSettings,
                                              es,
+                                            
                                              timeFilter
                                            }: {
   uiSettings: IUiSettingsClient;
-  es: LegacyApiCaller;
+  es: SearchAPI;
+  
   timeFilter:Timefilter
-}) {
+} ,abortSignal?: AbortSignal ) {
   return async ({
                   timeRange,
                   filters,
@@ -44,7 +48,7 @@ export function getTransformRequestHandler({
     const settings = uiSettings;
     //const options = chrome.getInjected('transformVisOptions');
     //const test = {name: 'string', defaultValue: undefined};
-    const options : InjectedMetadataSetup["getInjectedVar"]= (name= 'transformVisOptions', defaultValue= 'un')=> {};
+    const options : InjectedMetadataSetup["getInjectedVar"]= (name= 'transformVisOptions', defaultValue= 'undefined')=> {};
     const _timeRange: TimeRange = timeRange || settings.get('timepicker:timeDefaults');
     const _filters = filters || [];
     const _query = query || { language: 'kquery', query: '' };
@@ -117,12 +121,25 @@ export function getTransformRequestHandler({
         }
         delete body.previousContextSource;
       }
-      return es
-        .search({
-          index,
-          body,
-        })
-        .then(function (response: { error: any; }) {
+      if (!es) {
+        es = new SearchAPI(
+          {
+            uiSettings,
+            search: getData().search,
+            injectedMetadata: getInjectedMetadata(),
+          },
+          abortSignal
+        );
+      }
+      const test=  es
+        .search(
+         [index,
+          body]
+        )
+        console.log([index,
+          body]);
+        return test;
+        /*.then(function (response: { error: any; }) {
           // @ts-ignore
           if (response.error) throw response.error;
           if (queryName === '_single_') {
@@ -130,12 +147,12 @@ export function getTransformRequestHandler({
           } else {
             bindme.response = Object.assign(bindme.response, { [queryName]: response });
           }
-        })
-        .catch((error: any) => logError('Elasticsearch Query Error', [ `"${queryName}" query:\nGET ${index}/_search\n${JSON.stringify(body, null, 2)}`, error ]));
+        //})*/
+        //.catch((error: any) => logError('Elasticsearch Query Error', [ `"${queryName}" query:\nGET ${index}/_search\n${JSON.stringify(body, null, 2)}`, error ]));
     };
 
-    const evalMeta = (_response?: any) => {
-      if (options.allow_unsafe) {
+    const evalMeta = (response?: any) => {
+      if (options.name) {
         try {
           // @ts-ignore используется без var/let/const, а как необязатеьный параметр, чтобы не переименовывался при оптимизиции кода
           response = bindme.response;

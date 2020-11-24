@@ -28,7 +28,7 @@ import { DataPublicPluginStart } from '../../../src/plugins/data/public';
 import { createGetterSetter } from '../../../src/plugins/kibana_utils/public';
 import { MapsLegacyConfigType } from '../../../src/plugins/maps_legacy/public';
 
-export const [getData, setData] = createGetterSetter<DataPublicPluginStart>('dataStart');
+export const [getData, setData] = createGetterSetter<DataPublicPluginStart>('search');
 
 export const [getNotifications, setNotifications] = createGetterSetter<NotificationsStart>(
   'Notifications'
