@@ -31,23 +31,23 @@ export const createTransformVisDefinition = ({
       defaults: {
         meta: `({
   count_hits: function() {
-    return this.response.logstash_query.hits.total;
+    return this.response.logstash_query.hits.total.value;
   }
 })`,
         multiquerydsl: `{
   "logstash_query": {
-    "index": "kibana_sample_data_ecommerce-*",
+    "index": "kibana_sample_data_ecommerce",
     "query": {
       "bool": {
         "must": [
           "_DASHBOARD_CONTEXT_",
-          "_TIME_RANGE_[@timestamp]"
+          "_TIME_RANGE_[order_date]"
         ]
       }
     }
   }
 }`,
-        formula: '<hr>{{response.logstash_query.hits.total}} total hits<hr>',
+        formula: '<hr>{{response.logstash_query.hits.total.value}} total hits<hr>',
       },
     },
     editorConfig: {
