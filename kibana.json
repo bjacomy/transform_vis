@@ -4,5 +4,6 @@
   "server": false,
   "ui": true,
   "requiredPlugins": ["navigation","data","kibanaReact","kibanaUtils", "visualizations", "expressions"],
-  "optionalPlugins": []
+  "optionalPlugins": [],
+  "requiredBundles": []
 }

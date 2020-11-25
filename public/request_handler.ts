@@ -5,14 +5,17 @@ import { Timefilter } from '../../../src/plugins/data/public/query/timefilter';
 //import chrome from 'ui/chrome';
 //import { } from '../../../src/core/public/ui_settings/types'
 import {InjectedMetadataSetup} from '../../../src/core/public/injected_metadata'
-import { esQuery, TimeRange, Query, Filter } from '../../../src/plugins/data/public';
+import { esQuery, TimeRange, Query, Filter, SearchRequest } from '../../../src/plugins/data/public';
 import { VisParams } from '../../../src/plugins/visualizations/public';
 import { TransformVisData } from './types';
 import { LegacyApiCaller } from '../../../src/plugins/data/public/search/legacy/es_client';
-import { SearchAPI } from './data_model/search_api'
+
+//import { SearchAPI } from './data_model/search_api'
 import { ElasticsearchServiceStart, InternalElasticsearchServiceSetup } from '../../../src/core/server/elasticsearch';
 import { getData, getInjectedMetadata } from './services';
 import { DataPublicPluginSetup, DataPublicPluginStart } from '../../../src/plugins/data/public';
+import { data } from 'jquery';
+import { DataPluginStart } from 'src/plugins/data/server/plugin';
 
 
 
@@ -25,12 +28,12 @@ const babelTransform = (code: string) => {
 
 export function getTransformRequestHandler({
                                              uiSettings,
-                                             es,
-                                            
+                                             es,                                            
                                              timeFilter
                                            }: {
   uiSettings: IUiSettingsClient;
-  es: SearchAPI;
+  //es: SearchAPI;
+  es: LegacyApiCaller
   
   timeFilter:Timefilter
 } ,abortSignal?: AbortSignal ) {
@@ -45,6 +48,8 @@ export function getTransformRequestHandler({
     query: Query | null;
     visParams: VisParams;
   }): Promise<TransformVisData> => {
+    const data : DataPublicPluginStart = getData();
+    es = data.search.__LEGACY.esClient;
     const settings = uiSettings;
     //const options = chrome.getInjected('transformVisOptions');
     //const test = {name: 'string', defaultValue: undefined};
@@ -121,7 +126,7 @@ export function getTransformRequestHandler({
         }
         delete body.previousContextSource;
       }
-      if (!es) {
+ /*     if (!es) {
         es = new SearchAPI(
           {
             uiSettings,
@@ -131,15 +136,20 @@ export function getTransformRequestHandler({
           abortSignal
         );
       }
+      const request: SearchRequest = {"index":index, "request":body};
       const test=  es
         .search(
-         [index,
-          body]
+          request
         )
         console.log([index,
           body]);
-        return test;
-        /*.then(function (response: { error: any; }) {
+        return test;*/
+        return es
+        .search({
+          index,
+          body,
+        })
+        .then(function (response: { error: any; }) {
           // @ts-ignore
           if (response.error) throw response.error;
           if (queryName === '_single_') {
@@ -147,8 +157,8 @@ export function getTransformRequestHandler({
           } else {
             bindme.response = Object.assign(bindme.response, { [queryName]: response });
           }
-        //})*/
-        //.catch((error: any) => logError('Elasticsearch Query Error', [ `"${queryName}" query:\nGET ${index}/_search\n${JSON.stringify(body, null, 2)}`, error ]));
+        })
+        .catch((error: any) => logError('Elasticsearch Query Error', [ `"${queryName}" query:\nGET ${index}/_search\n${JSON.stringify(body, null, 2)}`, error ]));
     };
 
     const evalMeta = (response?: any) => {

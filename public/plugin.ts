@@ -7,9 +7,19 @@ import { createTransformVisDefinition } from './transform_vis';
 import { createTransformVisFn } from './transform_fn';
 import { getTransformRequestHandler} from './request_handler';
 import { DataPublicPluginSetup, DataPublicPluginStart ,IDataPluginServices} from '../../../src/plugins/data/public';
-import { setData, setInjectedMetadata,setInjectedVars  } from './services';
+//import { setData, setInjectedMetadata,setInjectedVars  } from './services';
 import { SearchAPI } from './data_model/search_api'
 //import { start} from './legacy'
+import {
+  setNotifications,
+  setData,
+  setSavedObjects,
+  setInjectedVars,
+  setUISettings,
+  setKibanaMapFactory,
+  setMapsLegacyConfig,
+  setInjectedMetadata,
+} from './services';
 
 
 
@@ -23,7 +33,7 @@ export interface TransformPluginSetupDependencies {
 export interface TransformPluginStartDependencies {
   expressions: ReturnType<ExpressionsPublicPlugin['setup']>;
   visualizations: VisualizationsSetup;
-  data: DataPublicPluginSetup;
+  data: DataPublicPluginStart;
   dataStart: SearchAPI;
   uiActions:IDataPluginServices;
 }
@@ -54,12 +64,14 @@ export class TransformPlugin implements Plugin<void, void> {
   
   }
   
-  public async start(core: CoreStart,{ expressions, visualizations, data, dataStart, uiActions }: TransformPluginStartDependencies){
-    console.log("expressione",expressions);
-    console.log("visualisations",visualizations);
+  public async start(core: CoreStart,{ expressions, visualizations, data, uiActions }: TransformPluginStartDependencies){
+ 
     console.log("data",data);
-    console.log("data",uiActions);
-  //setData(dataStart);
+ 
+    setNotifications(core.notifications);
+    setSavedObjects(core.savedObjects);
+    setData(data);
+    setInjectedMetadata(core.injectedMetadata);
     
   
   }

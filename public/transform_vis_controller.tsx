@@ -33,6 +33,18 @@ class TransformVisComponent extends React.Component<TransformVisComponentProps> 
   }
 
   async afterRender() {
+    if (this.props.meta){
+      console.log("this.props.meta",this.props.meta);
+    }
+    if (typeof this.props.meta.after_render === 'function'){
+      console.log("this.props.meta.after_render" );
+    }
+    console.log(this.transformVis.current);
+    console.log(this.transformVis.current.parentNode);
+    if (this.transformVis.current.parentNode instanceof ShadowRoot){
+      console.log("ShadowRoot")
+
+    }
     if (
       this.props.meta &&
       typeof this.props.meta.after_render === 'function' &&
@@ -56,7 +68,8 @@ class TransformVisComponent extends React.Component<TransformVisComponentProps> 
                 getTime: this.props.timefilter.getTime.bind(this.props.timefilter),
               },
             },
-            size: [root.host.parentNode.clientWidth, root.host.parentNode.clientHeight],
+            //size: [root.host.parentNode.clientWidth, root.host.parentNode.clientHeight],
+            size: [250,250]
           },
           es: this.props.es,
           context: this.props.context,

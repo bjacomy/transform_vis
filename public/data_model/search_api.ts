@@ -26,7 +26,7 @@ import {
   DataPublicPluginStart,
 } from '../../../../src/plugins/data/public';
 
-export interface SearchAPIDependencies {
+/*export interface SearchAPIDependencies {
   uiSettings: IUiSettingsClient;
   injectedMetadata: CoreStart['injectedMetadata'];
   search: DataPublicPluginStart['search'];
@@ -57,4 +57,4 @@ export class SearchAPI {
       })
     );
   }
-}
+}*/

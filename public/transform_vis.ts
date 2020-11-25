@@ -41,7 +41,7 @@ export const createTransformVisDefinition = ({
 })`,
         multiquerydsl: `{
   "logstash_query": {
-    "index": "logstash-*",
+    "index": "kibana_sample_data_ecommerce-*",
     "query": {
       "bool": {
         "must": [
