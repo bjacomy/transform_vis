@@ -33,7 +33,7 @@ function getTransformOptions(param: TransformVisParamsNames) {
         current.aceEditor.editor.resize();
       }
     }, [codeEditor]);
-
+    
     return (
       <EuiPanel paddingSize="s">
         <EuiCodeEditor
@@ -45,8 +45,8 @@ function getTransformOptions(param: TransformVisParamsNames) {
           value={stateParams[param]}
           onChange={onChange}
           data-test-subj="transformCodeeditor"
-          width="100%"
-          height="100%"
+          width="700px"
+          height="500px"
           setOptions={{
             useSoftTabs: true,
             tabSize: 2,
@@ -55,7 +55,7 @@ function getTransformOptions(param: TransformVisParamsNames) {
             enableSnippets: true,
             enableLiveAutocompletion: true,
           }}
-          minLines={6}
+          //minLines={6}
         />
         <ReactResizeDetector handleWidth handleHeight onResize={onResize} />
       </EuiPanel>

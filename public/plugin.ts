@@ -48,7 +48,7 @@ export class TransformPlugin implements Plugin<void, void> {
     { expressions, visualizations, data }: TransformPluginSetupDependencies
   ) {
   //setData(dataStart);
-  const config = createTransformVisDefinition({ uiSettings: core.uiSettings,  data, timefilter: data.query.timefilter.timefilter});
+  const config = createTransformVisDefinition({ uiSettings: core.uiSettings,  data/*, timefilter: data.query.timefilter.timefilter*/});
   visualizations.createReactVisualization(config);
   ////console.log("dataStartold",dataStartold)
   expressions.registerFunction(() =>

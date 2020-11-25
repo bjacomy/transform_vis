@@ -11,12 +11,12 @@ import { Timefilter } from '../../../src/plugins/data/public/query/timefilter';
 export const createTransformVisDefinition = ({
   uiSettings,
   data,
-  timefilter}: {
+  /*timefilter*/}: {
   uiSettings: IUiSettingsClient;
   data: DataPublicPluginSetup;
-  timefilter:Timefilter
+  //timefilter:Timefilter
 }) => {
-  const transformRequestHandler = getTransformRequestHandler({ uiSettings: uiSettings, timeFilter :timefilter });
+  const transformRequestHandler = getTransformRequestHandler({ uiSettings: uiSettings, timeFilter :data.query.timefilter.timefilter });
   const transformVisWrapper = getTransformVisWrapper(data);
 
   return {
