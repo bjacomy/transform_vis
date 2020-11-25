@@ -28,12 +28,12 @@ const babelTransform = (code: string) => {
 
 export function getTransformRequestHandler({
                                              uiSettings,
-                                             es,                                            
+                                             //es,                                            
                                              timeFilter
                                            }: {
   uiSettings: IUiSettingsClient;
   //es: SearchAPI;
-  es: LegacyApiCaller
+  //es: LegacyApiCaller
   
   timeFilter:Timefilter
 } ,abortSignal?: AbortSignal ) {
@@ -49,7 +49,7 @@ export function getTransformRequestHandler({
     visParams: VisParams;
   }): Promise<TransformVisData> => {
     const data : DataPublicPluginStart = getData();
-    es = data.search.__LEGACY.esClient;
+    const es = data.search.__LEGACY.esClient;
     const settings = uiSettings;
     //const options = chrome.getInjected('transformVisOptions');
     //const test = {name: 'string', defaultValue: undefined};

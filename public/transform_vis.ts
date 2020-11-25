@@ -2,26 +2,21 @@ import { i18n } from '@kbn/i18n';
 
 import { IUiSettingsClient } from 'kibana/public';
 import { DefaultEditorSize } from '../../../src/plugins/vis_default_editor/public';
-
 import { getTransformVisWrapper } from './transform_vis_controller';
 import { getTransformOptions } from './transform_options';
 import { getTransformRequestHandler } from './request_handler';
 import { DataPublicPluginSetup } from '../../../src/plugins/data/public';
-import { LegacyApiCaller } from '../../../src/plugins/data/public/search/legacy/es_client';
 import { Timefilter } from '../../../src/plugins/data/public/query/timefilter';
-import { SearchAPI } from './data_model/search_api'
 
 export const createTransformVisDefinition = ({
   uiSettings,
-  es,
   data,
   timefilter}: {
   uiSettings: IUiSettingsClient;
-  es: SearchAPI;
   data: DataPublicPluginSetup;
   timefilter:Timefilter
 }) => {
-  const transformRequestHandler = getTransformRequestHandler({ uiSettings: uiSettings,es : es, timeFilter :timefilter });
+  const transformRequestHandler = getTransformRequestHandler({ uiSettings: uiSettings, timeFilter :timefilter });
   const transformVisWrapper = getTransformVisWrapper(data);
 
   return {
