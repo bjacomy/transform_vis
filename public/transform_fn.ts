@@ -23,7 +23,7 @@ import { IUiSettingsClient } from 'kibana/public';
 import { ExpressionFunctionDefinition, Render, KibanaContext } from '../../../src/plugins/expressions/public';
 import { Arguments, TransformVisParams } from './types';
 import { getTransformRequestHandler } from './request_handler';
-import { esQuery, TimeRange, Query, Filter } from '../../../src/plugins/data/public';
+import { Query} from '../../../src/plugins/data/public';
 import { Timefilter } from 'src/plugins/data/public/query';
 
 
@@ -35,11 +35,9 @@ interface RenderValue {
 
 export const createTransformVisFn = ({
   uiSettings,
-  //es,
   timeFilter
 }: {
   uiSettings: IUiSettingsClient;
-  //es: LegacyApiCaller;
   timeFilter:Timefilter
 }): ExpressionFunctionDefinition<'transform_vis', KibanaContext | null, Arguments, Promise<Render<RenderValue>>> => ({
   name: 'transform_vis',

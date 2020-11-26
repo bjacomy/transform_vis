@@ -13,7 +13,6 @@ import 'brace/ext/searchbox';
 
 import ReactResizeDetector from 'react-resize-detector';
 import { VisOptionsProps } from 'src/plugins/vis_default_editor/public';
-///import { VisOptionsProps } from '../../../src/legacy/core_plugins/';
 import { TransformVisParams, TransformVisParamsNames } from './types';
 
 const mode: Record<string, string> = {
@@ -45,7 +44,7 @@ function getTransformOptions(param: TransformVisParamsNames) {
           value={stateParams[param]}
           onChange={onChange}
           data-test-subj="transformCodeeditor"
-          width="700px"
+          width="900px"
           height="500px"
           setOptions={{
             useSoftTabs: true,
@@ -55,7 +54,7 @@ function getTransformOptions(param: TransformVisParamsNames) {
             enableSnippets: true,
             enableLiveAutocompletion: true,
           }}
-          //minLines={6}
+          minLines={6}
         />
         <ReactResizeDetector handleWidth handleHeight onResize={onResize} />
       </EuiPanel>

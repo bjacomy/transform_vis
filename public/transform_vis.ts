@@ -6,15 +6,13 @@ import { getTransformVisWrapper } from './transform_vis_controller';
 import { getTransformOptions } from './transform_options';
 import { getTransformRequestHandler } from './request_handler';
 import { DataPublicPluginSetup } from '../../../src/plugins/data/public';
-import { Timefilter } from '../../../src/plugins/data/public/query/timefilter';
 
 export const createTransformVisDefinition = ({
   uiSettings,
   data,
-  /*timefilter*/}: {
+ }: {
   uiSettings: IUiSettingsClient;
   data: DataPublicPluginSetup;
-  //timefilter:Timefilter
 }) => {
   const transformRequestHandler = getTransformRequestHandler({ uiSettings: uiSettings, timeFilter :data.query.timefilter.timefilter });
   const transformVisWrapper = getTransformVisWrapper(data);
@@ -36,12 +34,12 @@ export const createTransformVisDefinition = ({
 })`,
         multiquerydsl: `{
   "logstash_query": {
-    "index": "kibana_sample_data_ecommerce",
+    "index": "logstash-*",
     "query": {
       "bool": {
         "must": [
           "_DASHBOARD_CONTEXT_",
-          "_TIME_RANGE_[order_date]"
+          "_TIME_RANGE_[@timestamp]"
         ]
       }
     }

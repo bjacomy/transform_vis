@@ -55,15 +55,11 @@ class TransformVisComponent extends React.Component<TransformVisComponentProps> 
               ...this.props.vis,
               timeFilter: {
                 getBounds: this.props.data.query.timefilter.timefilter.getBounds.bind(this.props.timefilter),
-                //getBounds: this.props.timefilter.getBounds.bind(this.props.timefilter),
-                //getActiveBounds: this.props.timefilter.getBounds.bind(this.props.timefilter),
                 getActiveBounds: this.props.data.query.timefilter.timefilter.getActiveBounds.bind(this.props.timefilter),
-                //getTime: this.props.timefilter.getTime.bind(this.props.timefilter),
                 getTime: this.props.data.query.timefilter.timefilter.getTime.bind(this.props.timefilter),
               },
             },
-            //size: [root.host.parentNode.clientWidth, root.host.parentNode.clientHeight],
-            size: [250,250]
+            size: [root.host.clientWidth, root.host.clientHeight],
           },
           es: this.props.es,
           context: this.props.context,

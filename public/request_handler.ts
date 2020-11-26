@@ -2,22 +2,14 @@ import { transform } from '@babel/standalone';
 import { IUiSettingsClient } from 'kibana/public';
 import Mustache from 'mustache';
 import { Timefilter } from '../../../src/plugins/data/public/query/timefilter';
-//import chrome from 'ui/chrome';
-//import { } from '../../../src/core/public/ui_settings/types'
+
 import {InjectedMetadataSetup} from '../../../src/core/public/injected_metadata'
-import { esQuery, TimeRange, Query, Filter, SearchRequest } from '../../../src/plugins/data/public';
+import { esQuery, TimeRange, Query, Filter} from '../../../src/plugins/data/public';
 import { VisParams } from '../../../src/plugins/visualizations/public';
 import { TransformVisData } from './types';
-import { LegacyApiCaller } from '../../../src/plugins/data/public/search/legacy/es_client';
 
-//import { SearchAPI } from './data_model/search_api'
-import { ElasticsearchServiceStart, InternalElasticsearchServiceSetup } from '../../../src/core/server/elasticsearch';
-import { getData, getInjectedMetadata } from './services';
-import { DataPublicPluginSetup, DataPublicPluginStart } from '../../../src/plugins/data/public';
-import { data } from 'jquery';
-import { DataPluginStart } from 'src/plugins/data/server/plugin';
-
-
+import { getData} from './services';
+import { DataPublicPluginStart } from '../../../src/plugins/data/public';
 
 const babelTransform = (code: string) => {
   return transform(code, {
@@ -27,14 +19,10 @@ const babelTransform = (code: string) => {
 };
 
 export function getTransformRequestHandler({
-                                             uiSettings,
-                                             //es,                                            
+                                             uiSettings,                                           
                                              timeFilter
                                            }: {
   uiSettings: IUiSettingsClient;
-  //es: SearchAPI;
-  //es: LegacyApiCaller
-  
   timeFilter:Timefilter
 } ,abortSignal?: AbortSignal ) {
   return async ({
@@ -51,8 +39,6 @@ export function getTransformRequestHandler({
     const data : DataPublicPluginStart = getData();
     const es = data.search.__LEGACY.esClient;
     const settings = uiSettings;
-    //const options = chrome.getInjected('transformVisOptions');
-    //const test = {name: 'string', defaultValue: undefined};
     const options : InjectedMetadataSetup["getInjectedVar"]= (name= 'transformVisOptions', defaultValue= 'undefined')=> {};
     const _timeRange: TimeRange = timeRange || settings.get('timepicker:timeDefaults');
     const _filters = filters || [];
@@ -126,24 +112,6 @@ export function getTransformRequestHandler({
         }
         delete body.previousContextSource;
       }
- /*     if (!es) {
-        es = new SearchAPI(
-          {
-            uiSettings,
-            search: getData().search,
-            injectedMetadata: getInjectedMetadata(),
-          },
-          abortSignal
-        );
-      }
-      const request: SearchRequest = {"index":index, "request":body};
-      const test=  es
-        .search(
-          request
-        )
-        console.log([index,
-          body]);
-        return test;*/
         return es
         .search({
           index,

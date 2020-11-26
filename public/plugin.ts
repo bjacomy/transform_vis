@@ -1,8 +1,6 @@
 import { PluginInitializerContext, CoreSetup, CoreStart, Plugin } from 'kibana/public';
 import { Plugin as ExpressionsPublicPlugin } from '../../../src/plugins/expressions/public';
-//import { VisualizationsSetup } from '../../../src/legacy/core_plugins/visualizations/public';
 import { VisualizationsSetup } from '../../../src/plugins/visualizations/public';
-import { Timefilter } from '../../../src/plugins/data/public/query/timefilter';
 import { createTransformVisDefinition } from './transform_vis';
 import { createTransformVisFn } from './transform_fn';
 import { DataPublicPluginSetup, DataPublicPluginStart ,IDataPluginServices} from '../../../src/plugins/data/public';
@@ -12,10 +10,6 @@ import {
   setNotifications,
   setData,
   setSavedObjects,
-  setInjectedVars,
-  setUISettings,
-  setKibanaMapFactory,
-  setMapsLegacyConfig,
   setInjectedMetadata,
 } from './services';
 
@@ -54,15 +48,9 @@ export class TransformPlugin implements Plugin<void, void> {
   expressions.registerFunction(() =>
     createTransformVisFn({ uiSettings: core.uiSettings,  timeFilter: data.query.timefilter.timefilter})
   );
-  
-    
-  
   }
   
   public async start(core: CoreStart,{ expressions, visualizations, data, uiActions }: TransformPluginStartDependencies){
- 
-    console.log("data",data);
- 
     setNotifications(core.notifications);
     setSavedObjects(core.savedObjects);
     setData(data);
