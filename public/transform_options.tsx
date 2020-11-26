@@ -1,6 +1,6 @@
 import React, { useCallback, useRef } from 'react';
 // @ts-ignore EuiCodeEditor
-import { EuiPanel, EuiCodeEditor } from '@elastic/eui';
+import { EuiPanel, EuiCodeEditor, EuiFlexItem } from '@elastic/eui';
 import 'brace/theme/textmate';
 import 'brace/mode/json';
 import 'brace/mode/javascript';
@@ -12,7 +12,7 @@ import 'brace/ext/language_tools';
 import 'brace/ext/searchbox';
 
 import ReactResizeDetector from 'react-resize-detector';
-import { VisOptionsProps } from 'src/plugins/vis_default_editor/public';
+import { VisOptionsProps } from 'src/plugins/vis_default_editor/public/vis_options_props';
 import { TransformVisParams, TransformVisParamsNames } from './types';
 
 const mode: Record<string, string> = {
@@ -26,16 +26,16 @@ function getTransformOptions(param: TransformVisParamsNames) {
     const onChange = useCallback((value: any) => setValue(param, value), [setValue]);
 
     const codeEditor = useRef<EuiCodeEditor>(null);
-    const onResize = useCallback(() => {
+    /*const onResize = useCallback(() => {
       const current = codeEditor.current;
       if (current !== null && current.aceEditor !== null) {
         current.aceEditor.editor.resize();
       }
-    }, [codeEditor]);
+    }, [codeEditor]);*/
     
     return (
-      <EuiPanel paddingSize="s">
-        <EuiCodeEditor
+      //<EuiPanel paddingSize="s" grow={true}>
+        <EuiCodeEditor       
           ref={codeEditor}
           key={param}
           mode={mode[param]}
@@ -44,8 +44,8 @@ function getTransformOptions(param: TransformVisParamsNames) {
           value={stateParams[param]}
           onChange={onChange}
           data-test-subj="transformCodeeditor"
-          width="900px"
-          height="500px"
+          width="100%"
+          height="100%"
           setOptions={{
             useSoftTabs: true,
             tabSize: 2,
@@ -56,8 +56,9 @@ function getTransformOptions(param: TransformVisParamsNames) {
           }}
           minLines={6}
         />
-        <ReactResizeDetector handleWidth handleHeight onResize={onResize} />
-      </EuiPanel>
+      //<ReactResizeDetector handleWidth handleHeight   onResize={onResize} />
+      //</EuiPanel>
+      
     );
   };
 }
