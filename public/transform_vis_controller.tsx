@@ -61,7 +61,7 @@ class TransformVisComponent extends React.Component<TransformVisComponentProps> 
             },
             size: [root.host.clientWidth, root.host.clientHeight],
           },
-          es: this.props.es,
+          //es: this.props.es,
           context: this.props.context,
           timeRange: this.props.timeRange,
           timefilter: this.props.data.query.timefilter.timefilter,
