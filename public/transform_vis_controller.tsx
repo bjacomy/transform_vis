@@ -5,13 +5,15 @@ import ShadowDOM from 'react-shadow';
 // @ts-ignore
 import { saveAs } from '@elastic/filesaver';
 import OnMount from './on_mount';
-import { Vis } from '../../../src/legacy/core_plugins/visualizations/public/np_ready/public';
+import { Vis } from '../../../src/plugins/visualizations/public/vis';
+import { ExprVis } from '../../../src/plugins/visualizations/public/expressions/vis';
+//import { Vis } from '../../../src/legacy/core_plugins/visualizations/public/np_ready/public';
 import { TransformVisData } from './types';
 import { DataPublicPluginSetup } from '../../../src/plugins/data/public';
 
 interface TransformVisComponentProps extends TransformVisData {
   renderComplete: () => {};
-  vis: Vis;
+  vis: Vis ;
   data: DataPublicPluginSetup;
 }
 
@@ -33,6 +35,7 @@ class TransformVisComponent extends React.Component<TransformVisComponentProps> 
   }
 
   async afterRender() {
+ 
     if (
       this.props.meta &&
       typeof this.props.meta.after_render === 'function' &&
@@ -47,21 +50,21 @@ class TransformVisComponent extends React.Component<TransformVisComponentProps> 
           container: root.host,
           root,
           vis: {
-            ...this.props.vis,
+            ...this.props,
             API: {
-              ...this.props.vis.API,
+              ...this.props.vis,
               timeFilter: {
-                getBounds: this.props.timefilter.getBounds.bind(this.props.timefilter),
-                getActiveBounds: this.props.timefilter.getBounds.bind(this.props.timefilter),
-                getTime: this.props.timefilter.getTime.bind(this.props.timefilter),
+                getBounds: this.props.data.query.timefilter.timefilter.getBounds.bind(this.props.timefilter),
+                getActiveBounds: this.props.data.query.timefilter.timefilter.getActiveBounds.bind(this.props.timefilter),
+                getTime: this.props.data.query.timefilter.timefilter.getTime.bind(this.props.timefilter),
               },
             },
-            size: [root.host.parentNode.clientWidth, root.host.parentNode.clientHeight],
+            size: [root.host.clientWidth, root.host.clientHeight],
           },
-          es: this.props.es,
+          //es: this.props.es,
           context: this.props.context,
           timeRange: this.props.timeRange,
-          timefilter: this.props.timefilter,
+          timefilter: this.props.data.query.timefilter.timefilter,
           filterManager: this.props.data.query.filterManager,
           meta: this.props.meta,
           saveAs,

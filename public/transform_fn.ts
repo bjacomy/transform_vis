@@ -23,7 +23,9 @@ import { IUiSettingsClient } from 'kibana/public';
 import { ExpressionFunctionDefinition, Render, KibanaContext } from '../../../src/plugins/expressions/public';
 import { Arguments, TransformVisParams } from './types';
 import { getTransformRequestHandler } from './request_handler';
-import { LegacyApiCaller } from '../../../src/plugins/data/public/search/es_client';
+import { Query} from '../../../src/plugins/data/public';
+import { Timefilter } from 'src/plugins/data/public/query';
+
 
 interface RenderValue {
   visType: 'transform';
@@ -33,10 +35,10 @@ interface RenderValue {
 
 export const createTransformVisFn = ({
   uiSettings,
-  es,
+  timeFilter
 }: {
   uiSettings: IUiSettingsClient;
-  es: LegacyApiCaller;
+  timeFilter:Timefilter
 }): ExpressionFunctionDefinition<'transform_vis', KibanaContext | null, Arguments, Promise<Render<RenderValue>>> => ({
   name: 'transform_vis',
   type: 'render',
@@ -68,10 +70,11 @@ export const createTransformVisFn = ({
     },
   },
   async fn(input, args) {
-    const transformRequestHandler = getTransformRequestHandler({ uiSettings, es });
+    
+    const transformRequestHandler = getTransformRequestHandler({ uiSettings, timeFilter});
     const response = await transformRequestHandler({
       timeRange: get(input, 'timeRange', null),
-      query: get(input, 'query', null),
+      query: <Query | null> get(input, 'query', null),
       filters: get(input, 'filters', null),
       visParams: args,
     });

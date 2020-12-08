@@ -2,7 +2,7 @@ import { Filter } from 'src/plugins/data/common/es_query/filters';
 import { DslQuery } from 'src/plugins/data/common/es_query/es_query/es_query_dsl';
 import { TimeRange } from 'src/plugins/data/public';
 import { timefilter } from 'ui/timefilter';
-import { LegacyApiCaller } from '../../../src/plugins/data/public/search/es_client';
+import { LegacyApiCaller } from '../../../src/plugins/data/public/search/legacy/es_client';
 
 export interface Arguments {
   multiquerydsl: string;

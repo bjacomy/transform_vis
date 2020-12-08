@@ -1,12 +1,17 @@
 import { transform } from '@babel/standalone';
 import { IUiSettingsClient } from 'kibana/public';
 import Mustache from 'mustache';
-import { timefilter } from 'ui/timefilter';
-import chrome from 'ui/chrome';
-import { esQuery, TimeRange, Query, Filter } from '../../../src/plugins/data/public';
-import { VisParams } from '../../../src/legacy/core_plugins/visualizations/public/np_ready/public';
+import { Timefilter } from '../../../src/plugins/data/public/query/timefilter';
+
+import {InjectedMetadataSetup} from '../../../src/core/public/injected_metadata'
+import { esQuery, TimeRange, Query, Filter} from '../../../src/plugins/data/public';
+import { VisParams } from '../../../src/plugins/visualizations/public';
 import { TransformVisData } from './types';
-import { LegacyApiCaller } from '../../../src/plugins/data/public/search/es_client';
+
+import { getData} from './services';
+import { DataPublicPluginStart } from '../../../src/plugins/data/public';
+import axios from 'axios'
+import value from '@elastic/eui/dist/eui_theme_*.json';
 
 const babelTransform = (code: string) => {
   return transform(code, {
@@ -16,12 +21,12 @@ const babelTransform = (code: string) => {
 };
 
 export function getTransformRequestHandler({
-                                             uiSettings,
-                                             es,
+                                             uiSettings,                                           
+                                             timeFilter
                                            }: {
   uiSettings: IUiSettingsClient;
-  es: LegacyApiCaller;
-}) {
+  timeFilter:Timefilter
+} ,abortSignal?: AbortSignal ) {
   return async ({
                   timeRange,
                   filters,
@@ -33,9 +38,10 @@ export function getTransformRequestHandler({
     query: Query | null;
     visParams: VisParams;
   }): Promise<TransformVisData> => {
-    const settings = chrome.getUiSettingsClient();
-    const options = chrome.getInjected('transformVisOptions');
-
+    //const data : DataPublicPluginStart = getData();
+    //const es = data.search.__LEGACY.esClient;
+    const settings = uiSettings;
+    const options : InjectedMetadataSetup["getInjectedVar"]= (name= 'transformVisOptions', defaultValue= 'undefined')=> {};
     const _timeRange: TimeRange = timeRange || settings.get('timepicker:timeDefaults');
     const _filters = filters || [];
     const _query = query || { language: 'kquery', query: '' };
@@ -53,10 +59,10 @@ export function getTransformRequestHandler({
 
     const bindme: Record<string, any> = {};
     bindme.context = context;
-    bindme.timefilter = timefilter;
+    bindme.timefilter = timeFilter;
     bindme.timeRange = _timeRange;
     bindme.buildEsQuery = esQuery.buildEsQuery;
-    bindme.es = es;
+    //bindme.es = es;
     bindme.response = {};
 
     const parseMultiqueryDsl = (_multiquerydsltext: string | undefined): Record<string, any> => {
@@ -108,25 +114,38 @@ export function getTransformRequestHandler({
         }
         delete body.previousContextSource;
       }
-      return es
+      const requestSearch = {
+        body: body
+      };
+      try{
+
+        const headers = {
+          'Content-Type': 'application/json',
+          'kbn-xsrf': 'reporting'
+        }
+          
+      response = await axios.post(`../api/transform_vis/${index}/_search`,requestSearch,{headers: headers});
+/*        return es
         .search({
           index,
           body,
         })
-        .then(function (response) {
+        .then(function (response: { error: any; }) {*/
           // @ts-ignore
-          if (response.error) throw response.error;
+          response = response.data.data;
+          //if (response.status) throw response.error;
           if (queryName === '_single_') {
             bindme.response = Object.assign(bindme.response, response);
           } else {
             bindme.response = Object.assign(bindme.response, { [queryName]: response });
           }
-        })
-        .catch(error => logError('Elasticsearch Query Error', [ `"${queryName}" query:\nGET ${index}/_search\n${JSON.stringify(body, null, 2)}`, error ]));
+        }
+        catch(error: any) { logError('Elasticsearch Query Error', [ `"${queryName}" query:\nGET ${index}/_search\n${JSON.stringify(body, null, 2)}`, error ])};
+        return response;
     };
 
     const evalMeta = (response?: any) => {
-      if (options.allow_unsafe) {
+      if (options.name) {
         try {
           // @ts-ignore используется без var/let/const, а как необязатеьный параметр, чтобы не переименовывался при оптимизиции кода
           response = bindme.response;
@@ -156,9 +175,9 @@ export function getTransformRequestHandler({
         return {
           transform: Mustache.render(formula, { ...bindme, meta: awaitContext }),
           meta: bindme.meta,
-          es,
+          //es,
           context,
-          timefilter,
+          timeFilter,
           timeRange,
           buildEsQuery: esQuery.buildEsQuery,
         };

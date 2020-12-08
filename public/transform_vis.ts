@@ -2,23 +2,19 @@ import { i18n } from '@kbn/i18n';
 
 import { IUiSettingsClient } from 'kibana/public';
 import { DefaultEditorSize } from '../../../src/plugins/vis_default_editor/public';
-
 import { getTransformVisWrapper } from './transform_vis_controller';
 import { getTransformOptions } from './transform_options';
 import { getTransformRequestHandler } from './request_handler';
 import { DataPublicPluginSetup } from '../../../src/plugins/data/public';
-import { LegacyApiCaller } from '../../../src/plugins/data/public/search/legacy/es_client';
 
 export const createTransformVisDefinition = ({
   uiSettings,
-  es,
   data,
-}: {
+ }: {
   uiSettings: IUiSettingsClient;
-  es: LegacyApiCaller;
   data: DataPublicPluginSetup;
 }) => {
-  const transformRequestHandler = getTransformRequestHandler({ uiSettings, es });
+  const transformRequestHandler = getTransformRequestHandler({ uiSettings: uiSettings, timeFilter :data.query.timefilter.timefilter });
   const transformVisWrapper = getTransformVisWrapper(data);
 
   return {
@@ -33,7 +29,7 @@ export const createTransformVisDefinition = ({
       defaults: {
         meta: `({
   count_hits: function() {
-    return this.response.logstash_query.hits.total;
+    return this.response.logstash_query.hits.total.value;
   }
 })`,
         multiquerydsl: `{
@@ -49,7 +45,7 @@ export const createTransformVisDefinition = ({
     }
   }
 }`,
-        formula: '<hr>{{response.logstash_query.hits.total}} total hits<hr>',
+        formula: '<hr>{{response.logstash_query.hits.total.value}} total hits<hr>',
       },
     },
     editorConfig: {
