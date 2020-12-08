@@ -12,6 +12,8 @@ import {
   setSavedObjects,
   setInjectedMetadata,
 } from './services';
+import { setStartServices } from 'ui/new_platform/set_services';
+import { HomeKibanaServices, setServices } from 'src/plugins/home/public/application/kibana_services';
 
 
 
@@ -39,15 +41,15 @@ export class TransformPlugin implements Plugin<void, void> {
 
   public async setup(
     core: CoreSetup,
-    { expressions, visualizations, data }: TransformPluginSetupDependencies
+    { expressions, visualizations, data  }: TransformPluginSetupDependencies
   ) {
   //setData(dataStart);
-  const config = createTransformVisDefinition({ uiSettings: core.uiSettings,  data/*, timefilter: data.query.timefilter.timefilter*/});
+  const config = createTransformVisDefinition({ uiSettings: core.uiSettings,  data });
   visualizations.createReactVisualization(config);
-  ////console.log("dataStartold",dataStartold)
   expressions.registerFunction(() =>
     createTransformVisFn({ uiSettings: core.uiSettings,  timeFilter: data.query.timefilter.timefilter})
   );
+  
   }
   
   public async start(core: CoreStart,{ expressions, visualizations, data, uiActions }: TransformPluginStartDependencies){
