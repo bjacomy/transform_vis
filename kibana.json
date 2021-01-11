@@ -1,9 +1,9 @@
 {
   "id": "transformVis",
-  "version": "7.9.1",
+  "version": "7.10.0",
   "server": true,
   "ui": true,
-  "requiredPlugins": ["navigation","data","kibanaReact","kibanaUtils", "visualizations", "expressions"],
+  "requiredPlugins": ["navigation","data","kibanaReact","kibanaUtils", "visualizations", "expressions","visDefaultEditor"],
   "optionalPlugins": [],
   "requiredBundles": []
 }
